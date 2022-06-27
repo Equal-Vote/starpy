@@ -48,13 +48,14 @@ def scoring_phase(S, w, k=5, highstar=True):
     if w == 1:
         return [winner]
     else:
-        S = S.drop(winner)
+        S = S.drop(winner, axis=1)
         return [winner] + scoring_phase(S, w-1, k=k, highstar=highstar)
 
 def STAR(S, k=5, highstar=True):
-    if S.size[1] == 1:
+    if S.shape[1] == 1:
         return S.columns[0]
 
     # Otherwise, there is real competition!
     two_advancing = scoring_phase(S, 2, k=k, highstar=highstar)
     return break_ties(S, two_advancing)
+
