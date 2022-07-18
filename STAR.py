@@ -7,6 +7,7 @@ class InvalidElection(Exception):
 class TrueTie:
     def __init__(self, tied):
         self.tied = tied
+        self.elected = []
 
 def summary_data(ballots: pd.DataFrame):
     # The below quantities can be emitted however is most useful
@@ -137,7 +138,7 @@ def Bloc_STAR(ballots: pd.DataFrame, numwinners: int, scoring_tiebreaker=default
 
             else:
                 # In this case, the election returned a tie unresolveable by stated tiebreakers
-                w.tied.extend(elected)
+                w.elected.extend(elected)
                 return w
         else:
             elected.append(w)
