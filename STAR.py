@@ -93,14 +93,14 @@ def default_scoring_tiebreaker(pairwise_matrix: pd.DataFrame):
     else:
         return TrueTie(tmp)
 
-def default_runoff_tiebreaker(summar_data: SummaryData):
+def default_runoff_tiebreaker(summary_data: SummaryData):
     # Any pre-runoff ties must be resolved
-    assert len(summar_data.score_sums.index) == 2
+    assert len(summary_data.score_sums.index) == 2
 
-    a,b = summar_data.score_sums.index
-    scores = summar_data.score_sums
+    a,b = summary_data.score_sums.index
+    scores = summary_data.score_sums
     if np.isclose(scores[a], scores[b]):
-        return TrueTie(list(summar_data.score_sums.index))
+        return TrueTie(list(summary_data.score_sums.index))
     else:
         return scores.argmax()
 
@@ -111,7 +111,9 @@ def Run_STAR_Round(summary_data: SummaryData, scoring_tiebreaker=default_scoring
     
     if len(summary_data.score_sums.index) == 1:
         round_results['winners'] = summary_data.score_sums.index
-        return summary_data.score_sums.index
+        round_results['logs'].append({'top_score': summary_data.score_sums.index})
+        round_results['logs'].append({'runoff_candidates': summary_data.score_sums.index})
+        return round_results
  
     runoff_candidates = []
     while len(runoff_candidates) < 2:
