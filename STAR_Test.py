@@ -26,7 +26,6 @@ class TestSTAR:
         print(json.dumps(results, indent = 2)) #TODO: write printing function to make this look good
         assert results['elected'] == ['A4']
 
-
     def test_tennessee(self):
         # Standard Tennessee example
         # https://en.wikipedia.org/wiki/STAR_voting#Example
@@ -39,6 +38,26 @@ class TestSTAR:
                                      *17*[[0,      2,        4,          5]]])
 
         assert STAR(ballots)['elected'] == ['Nashville']
+
+    # https://github.com/Equal-Vote/star-core/blob/master/src/Tests/ties.test.js
+    def test_star_condorcet_winner(self):
+        columns = ['Allison', 'Bill', 'Carmen', 'Doug']
+        election = [[5, 2, 1, 4],
+                    [5, 2, 1, 0],
+                    [5, 2, 1, 0],
+                    [5, 2, 1, 0],
+                    [5, 3, 4, 0],
+                    [5, 1, 4, 0],
+                    [5, 1, 4, 0],
+                    [4, 0, 5, 1],
+                    [3, 4, 5, 0],
+                    [3, 5, 5, 5]]
+        ballots = pd.DataFrame(columns=columns, data=election)
+        results = STAR(ballots)
+
+        # expected = [["Allison"], ["Carmen"], ["Bill", "Doug"]];
+        assert results['elected'] == ['Allison']
+        assert results['round_results'][0]['runner_up'] == 'Carmen'
 
 
 if __name__ == '__main__':
