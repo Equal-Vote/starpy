@@ -9,9 +9,10 @@ import json
 import pandas as pd
 import numpy as np
 from STAR import STAR
-import unittest
+import pytest
 
-class STARTest(unittest.TestCase):
+
+class TestSTAR:
     def test_original_example(self):
         Candidates = ['A1','A2','A3','A4','B1','B2','B3','B4','C1','C2','C3','C4']
         Red = 61 * [[5.0,5.0,5.0,5.0,3.0,3.0,3.0,3.0,0.0,0.0,0.0,0.0]]
@@ -23,7 +24,7 @@ class STARTest(unittest.TestCase):
 
         results = STAR(S)
         print(json.dumps(results, indent = 2)) #TODO: write printing function to make this look good
-        self.assertEqual(results['elected'],['A4'])
+        assert results['elected'] == ['A4']
 
 
     def test_tennessee(self):
@@ -37,8 +38,8 @@ class STARTest(unittest.TestCase):
                                      *15*[[0,      3,        5,          3]],
                                      *17*[[0,      2,        4,          5]]])
 
-        self.assertEqual(STAR(ballots)['elected'], ['Nashville'])
+        assert STAR(ballots)['elected'] == ['Nashville']
 
 
 if __name__ == '__main__':
-    unittest.main()
+    pytest.main()
