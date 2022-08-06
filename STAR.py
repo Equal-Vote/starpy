@@ -188,7 +188,7 @@ def STAR(input_data: Union[pd.DataFrame,SummaryData], numwinners=1, scoring_tieb
             or a TrueTie instance if it is not sufficiently resolute. Called during the runoff round of STAR.
 
         Returns:
-            The winner name as a string.
+            A dict containing the election results.
 
         Examples:
             Candace and Allie are the favorite of two voters, while Billy is
@@ -213,8 +213,13 @@ def STAR(input_data: Union[pd.DataFrame,SummaryData], numwinners=1, scoring_tieb
             Billy      21
             Candace    11
             dtype: int64
-            >>> print(STAR(ballots))
-            Billy
+            >>> STAR(ballots)
+            {'elected': ['Billy'],
+             'round_results': [{'winners': ['Billy'],
+               'runner_up': 'Allie',
+               'logs': [{'top_score': ['Billy']},
+                {'top_score': ['Allie']},
+                {'runoff_candidates': ['Billy', 'Allie']}]}]}
     """
     results = {'elected': [], 'round_results': []}
     if isinstance(input_data,SummaryData):
