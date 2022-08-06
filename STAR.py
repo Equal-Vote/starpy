@@ -102,7 +102,7 @@ def default_runoff_tiebreaker(summary_data: SummaryData):
     if np.isclose(scores[a], scores[b]):
         return TrueTie(list(summary_data.score_sums.index))
     else:
-        return scores.argmax()
+        return scores.index[scores.argmax()]
 
 def Run_STAR_Round(summary_data: SummaryData, scoring_tiebreaker=default_scoring_tiebreaker, runoff_tiebreaker=default_runoff_tiebreaker):
     # If there is only one candidate, elect them
