@@ -5,6 +5,7 @@ Created on Thu Oct  8 12:03:26 2020
 @author: keiedmo
 """
 
+import json
 import pandas as pd
 import numpy as np
 from STAR import STAR
@@ -18,13 +19,11 @@ class STARTest(unittest.TestCase):
         tie_breaker = [[2.0,3.0,4.0,5.0,2.0,3.0,4.0,5.0,2.0,3.0,4.0,5.0]]
         all_parties = Red + blue + tie_breaker
 
-        W = 5
-        K = 5.0
         S = pd.DataFrame(all_parties, columns= Candidates) 
 
-        winner = STAR(K, W, S)
-        print(winner)   
-        self.assertEqual(winner,'A4')    
+        results = STAR(S)
+        print(json.dumps(results, indent = 2)) #TODO: write printing function to make this look good
+        self.assertEqual(results['elected'],['A4'])    
 
 
 
