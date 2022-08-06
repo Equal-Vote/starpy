@@ -19,12 +19,25 @@ class STARTest(unittest.TestCase):
         tie_breaker = [[2.0,3.0,4.0,5.0,2.0,3.0,4.0,5.0,2.0,3.0,4.0,5.0]]
         all_parties = Red + blue + tie_breaker
 
-        S = pd.DataFrame(all_parties, columns= Candidates) 
+        S = pd.DataFrame(all_parties, columns= Candidates)
 
         results = STAR(S)
         print(json.dumps(results, indent = 2)) #TODO: write printing function to make this look good
-        self.assertEqual(results['elected'],['A4'])    
+        self.assertEqual(results['elected'],['A4'])
 
+
+    def test_tennessee(self):
+        # Standard Tennessee example
+        # https://en.wikipedia.org/wiki/STAR_voting#Example
+        # https://electowiki.org/wiki/STAR_voting#Example
+        columns = ['Memphis', 'Nashville', 'Chattanooga', 'Knoxville']
+        ballots = pd.DataFrame(columns=columns,
+                               data=[*42*[[5,      2,        1,          0]],
+                                     *26*[[0,      5,        2,          1]],
+                                     *15*[[0,      3,        5,          3]],
+                                     *17*[[0,      2,        4,          5]]])
+
+        self.assertEqual(STAR(ballots), 'Nashville')
 
 
 if __name__ == '__main__':
