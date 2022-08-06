@@ -37,7 +37,7 @@ class STARTest(unittest.TestCase):
                                      *15*[[0,      3,        5,          3]],
                                      *17*[[0,      2,        4,          5]]])
 
-        self.assertEqual(STAR(ballots), 'Nashville')
+        self.assertEqual(STAR(ballots)['elected'], ['Nashville'])
 
 
 if __name__ == '__main__':
