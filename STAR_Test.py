@@ -59,6 +59,24 @@ class TestSTAR:
         assert results['elected'] == ['Allison']
         assert results['round_results'][0]['runner_up'] == 'Carmen'
 
+    def test_star_runner_up_tie(self):
+        columns = ['Allison', 'Bill', 'Carmen', 'Doug']
+        election = [[5, 4, 3, 3],
+                    [4, 5, 1, 1],
+                    [4, 5, 1, 2],
+                    [3, 5, 1, 0],
+                    [5, 4, 3, 0],
+                    [5, 0, 4, 1],
+                    [5, 0, 4, 0],
+                    [4, 0, 5, 1],
+                    [3, 4, 5, 0],
+                    [3, 5, 5, 4]]
+        ballots = pd.DataFrame(columns=columns, data=election)
+        results = STAR(ballots)
+
+        # expected = [["Allison"], ["Bill", "Carmen"], ["Doug"]];
+        assert results['elected'] == ['Allison']
+
 
 if __name__ == '__main__':
     pytest.main()
