@@ -8,7 +8,7 @@ Created on Thu Oct  8 12:03:26 2020
 import json
 import pandas as pd
 import numpy as np
-from STAR import STAR
+from STAR import STAR, TrueTie
 import pytest
 
 
@@ -76,6 +76,42 @@ class TestSTAR:
 
         # expected = [["Allison"], ["Bill", "Carmen"], ["Doug"]];
         assert results['elected'] == ['Allison']
+
+    def test_star_true_tie(self):
+        columns = ['Allison', 'Bill', 'Carmen', 'Doug']
+        election = [[5, 4, 1, 4],
+                    [5, 4, 1, 4],
+                    [2, 4, 1, 2],
+                    [4, 3, 2, 1],
+                    [0, 5, 4, 4],
+                    [3, 2, 4, 2],
+                    [3, 1, 5, 3],
+                    [3, 1, 5, 3],
+                    [1, 3, 2, 2],
+                    [4, 3, 5, 5]]
+        ballots = pd.DataFrame(columns=columns, data=election)
+        results = STAR(ballots)
+
+        # expected = [["Allison", "Bill", "Carmen"], [], ["Doug"]];
+        assert isinstance(results['elected'][0], TrueTie)
+
+    def test_star_PR_ties(self):
+        columns = ['Allison', 'Bill', 'Carmen', 'Doug']
+        election = [[5, 4, 1, 4],
+                    [5, 4, 1, 4],
+                    [2, 4, 1, 2],
+                    [4, 3, 2, 1],
+                    [0, 5, 4, 4],
+                    [3, 2, 4, 2],
+                    [3, 1, 5, 3],
+                    [3, 1, 5, 3],
+                    [1, 3, 2, 2],
+                    [4, 3, 5, 5]]
+        ballots = pd.DataFrame(columns=columns, data=election)
+        results = STAR(ballots)
+
+        # expectedWinners = ["Allison", "Carmen", "Bill"];
+        assert isinstance(results['elected'][0], TrueTie)
 
 
 if __name__ == '__main__':
