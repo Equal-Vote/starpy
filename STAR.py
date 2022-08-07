@@ -139,7 +139,7 @@ def Run_STAR_Round(summary_data: SummaryData, scoring_tiebreaker=default_scoring
                     return round_results
 
             else:
-                runoff_candidates.extend(w)
+                runoff_candidates.extend([w])
     
     round_results['logs'].append({'runoff_candidates': runoff_candidates})
     # At this point, either we have already exited or runoff_candidates contains exactly two candidates
