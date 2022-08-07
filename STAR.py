@@ -211,7 +211,7 @@ def STAR(input_data: Union[pd.DataFrame,SummaryData], numwinners=1, scoring_tieb
 
             else:
                 # In this case, the election returned a tie unresolveable by stated tiebreakers
-                results['elected'].extend(round_results['winners'].tied)
+                results['elected'].extend([round_results['winners']])
                 return results
         else:
             results['elected'].extend(round_results['winners'])
