@@ -135,11 +135,12 @@ def Run_STAR_Round(summary_data: SummaryData, scoring_tiebreaker=default_scoring
 
                 else:
                     # In this case, the election returned a tie unresolvable by stated tiebreakers
-                    round_results['winners'] = w.tied.extend(runoff_candidates)
+                    w.tied.extend(runoff_candidates)
+                    round_results['winners'] = w
                     return round_results
 
             else:
-                runoff_candidates.extend(w)
+                runoff_candidates.extend([w])
     
     round_results['logs'].append({'runoff_candidates': runoff_candidates})
     # At this point, either we have already exited or runoff_candidates contains exactly two candidates
@@ -244,7 +245,7 @@ def STAR(input_data: Union[pd.DataFrame,SummaryData], numwinners=1, scoring_tieb
 
             else:
                 # In this case, the election returned a tie unresolveable by stated tiebreakers
-                results['elected'].extend(round_results['winners'])
+                results['elected'].extend([round_results['winners']])
                 return results
         else:
             results['elected'].extend(round_results['winners'])
