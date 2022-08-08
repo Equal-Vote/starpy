@@ -113,6 +113,134 @@ class TestSTAR:
         # expectedWinners = ["Allison", "Carmen", "Bill"];
         assert isinstance(results['elected'][0], TrueTie)
 
+    def test_tiebreaker_cases(self):
+        # 1. One highest-scoring, one 2nd-highest. B preferred in runoff:
+        election = [[0, 5],
+                    [2, 4],
+                    ]
+        ballots = pd.DataFrame(data=election)
+        results = STAR(ballots)
+        assert results['elected'] == [1]
+
+        # 2. One highest-scoring, one 2nd-highest. Both tied in runoff, break
+        # tie using scores, B wins:
+        election = [[0, 5],
+                    [3, 2],
+                    ]
+        ballots = pd.DataFrame(data=election)
+        results = STAR(ballots)
+        assert results['elected'] == [1]
+
+        # 3. Two tied for highest-scoring, B wins in runoff:
+        election = [[0, 2],
+                    [1, 2],
+                    [4, 1],
+                    ]
+        ballots = pd.DataFrame(data=election)
+        results = STAR(ballots)
+        assert results['elected'] == [1]
+
+        # 4. Two tied for highest-scoring, also tied in runoff:
+        election = [[1, 3],
+                    [4, 2],
+                    ]
+        ballots = pd.DataFrame(data=election)
+        results = STAR(ballots)
+        assert isinstance(results['elected'][0], TrueTie)
+        assert set(results['elected'][0].tied) == {0, 1}
+
+        # 5. One highest-scoring, two or more tied for second-highest. One
+        # Condorcet winner among tied (C). One is preferred in runoff (A):
+        election = [[5, 2, 3],
+                    [5, 2, 3],
+                    [5, 2, 0],
+                    ]
+        ballots = pd.DataFrame(data=election)
+        results = STAR(ballots)
+        assert results['elected'] == [0]
+
+        # 6. One highest-scoring, two or more tied for second-highest. One
+        # Condorcet winner among tied (C). Runoff is tied, highest-scoring A
+        # wins:
+        election = [[5, 2, 3],
+                    [5, 2, 3],
+                    [1, 2, 2],
+                    [1, 4, 2],
+                    ]
+        ballots = pd.DataFrame(data=election)
+        results = STAR(ballots)
+        assert results['elected'] == [0]
+
+        # 7. One highest-scoring, two or more tied for second-highest. No
+        # Condorcet winner among tied, break 2nd place (B or C). A is preferred
+        # in runoff regardless:
+        election = [[5, 2, 3],
+                    [5, 2, 3],
+                    [4, 3, 2],
+                    [1, 4, 3],
+                    ]
+        ballots = pd.DataFrame(data=election)
+        results = STAR(ballots)
+        # assert results['elected'] == [0]
+
+        # 8. One highest-scoring, two or more tied for second-highest. No
+        # Condorcet winner among tied, break 2nd place (B or C). Both are
+        # also tied in runoff regardless, and highest-scoring wins (A):
+        election = [[5, 2, 3],
+                    [5, 2, 3],
+                    [1, 3, 2],
+                    [1, 4, 3],
+                    ]
+        ballots = pd.DataFrame(data=election)
+        results = STAR(ballots)
+        # assert results['elected'] == [0]
+
+        # 9. Three or more tied for highest-scoring. One Condorcet winner and
+        # one 2nd-place Condorcet winner go to runoff. Condorcet winner is A:
+        election = [[2, 1, 0],
+                    [2, 1, 0],
+                    [2, 1, 0],
+                    [2, 1, 0],
+                    [1, 0, 0],
+                    [0, 0, 4],
+                    [0, 5, 5],
+                    ]
+        ballots = pd.DataFrame(data=election)
+        results = STAR(ballots)
+        assert results['elected'] == [0]
+
+        # 10. Three or more tied for highest-scoring. Two tied for Condorcet
+        # winner (A and B), both go to runoff. True Tie in runoff:
+        election = [[2, 2, 0],
+                    [2, 2, 0],
+                    [1, 1, 5],
+                    ]
+        ballots = pd.DataFrame(data=election)
+        results = STAR(ballots)
+        assert isinstance(results['elected'][0], TrueTie)
+        assert set(results['elected'][0].tied) == {0, 1}
+
+        # 11. Three or more tied for highest-scoring. One Condorcet winner in
+        # tiebreaker and two or more tied for 2nd place CW. Break tie (B or C).
+        # Regardless, Condorcet winner A wins runoff:
+        election = [[2, 1, 1],
+                    [2, 1, 1],
+                    [3, 5, 5],
+                    ]
+        ballots = pd.DataFrame(data=election)
+        results = STAR(ballots)
+        # assert results['elected'] == [0]
+
+        # 12. Three or more tied for highest-scoring. No Condorcet winners
+        # either:
+        election = [[5, 5, 5],
+                    [2, 2, 2],
+                    ]
+        ballots = pd.DataFrame(data=election)
+        results = STAR(ballots)
+        assert isinstance(results['elected'][0], TrueTie)
+        assert set(results['elected'][0].tied) == {0, 1, 2}
+
 
 if __name__ == '__main__':
     pytest.main()
