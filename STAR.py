@@ -186,6 +186,40 @@ def STAR(input_data: Union[pd.DataFrame,SummaryData], numwinners=1, scoring_tieb
             
         runoff_tiebreaker (function): Given an election instance, returns a winner according to the tiebreaker
             or a TrueTie instance if it is not sufficiently resolute. Called during the runoff round of STAR.
+
+        Returns:
+            A dict containing the election results.
+
+        Examples:
+            Candace and Allie are the favorite of two voters, while Billy is
+            the favorite of one.  Since all voters give Billy high scores,
+            Billy and Allie proceed to the runoff.  In the runoff, Billy is
+            preferred by three out of five voters over Allie, and wins.
+
+            >>> import pandas as pd
+            >>> ballots = pd.DataFrame(columns=['Allie', 'Billy', 'Candace'],
+                                       data=[*2*[[5,      4,       0]],
+                                             *1*[[2,      5,       1]],
+                                             *2*[[0,      4,       5]],])
+            >>> print(ballots)
+               Allie  Billy  Candace
+            0      5      4        0
+            1      5      4        0
+            2      2      5        1
+            3      0      4        5
+            4      0      4        5
+            >>> print(ballots.sum())
+            Allie      12
+            Billy      21
+            Candace    11
+            dtype: int64
+            >>> STAR(ballots)
+            {'elected': ['Billy'],
+             'round_results': [{'winners': ['Billy'],
+               'runner_up': 'Allie',
+               'logs': [{'top_score': ['Billy']},
+                {'top_score': ['Allie']},
+                {'runoff_candidates': ['Billy', 'Allie']}]}]}
     """
     results = {'elected': [], 'round_results': []}
     if isinstance(input_data,SummaryData):
