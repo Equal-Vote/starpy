@@ -95,13 +95,14 @@ def default_scoring_tiebreaker(pairwise_matrix: pd.DataFrame):
 def default_runoff_tiebreaker(summary_data: SummaryData):
     # Any pre-runoff ties must be resolved
     assert len(summary_data.score_sums.index) == 2
-
     a,b = summary_data.score_sums.index
     scores = summary_data.score_sums
-    if np.isclose(scores[a], scores[b]):
-        return TrueTie(summary_data.score_sums.index)
+    if scores[a]>scores[b]:
+        return a
+    elif scores[b]>scores[a]:
+        return b
     else:
-        return scores.index[scores.argmax()]
+        return TrueTie(summary_data.score_sums.index)
 
 def Run_STAR_Round(summary_data: SummaryData, scoring_tiebreaker=default_scoring_tiebreaker, runoff_tiebreaker=default_runoff_tiebreaker):
     # If there is only one candidate, elect them
@@ -139,6 +140,7 @@ def Run_STAR_Round(summary_data: SummaryData, scoring_tiebreaker=default_scoring
                     return round_results
 
             else:
+                round_results['logs'].append({'score_tie_winner': w})
                 runoff_candidates.extend([w])
     
     round_results['logs'].append({'runoff_candidates': runoff_candidates})
@@ -154,12 +156,15 @@ def Run_STAR_Round(summary_data: SummaryData, scoring_tiebreaker=default_scoring
         round_results['runner_up'] = a
         return round_results
     else:
+        round_results['logs'].append({'runoff_tie': runoff_candidates})
         runoff_tiebreaker_results = runoff_tiebreaker(copy.deepcopy(summary_data).keep(runoff_candidates))
         if runoff_tiebreaker_results == a:
+            round_results['logs'].append({'runoff_tie_winner': a})
             round_results['winners'] = [a]
             round_results['runner_up'] = b
             return round_results
         elif runoff_tiebreaker_results == b:
+            round_results['logs'].append({'runoff_tie_winner': b})
             round_results['winners'] = [b]
             round_results['runner_up'] = a
             return round_results
