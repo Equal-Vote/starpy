@@ -8,7 +8,7 @@ class InvalidElection(Exception):
 
 class TrueTie(set):
     def __repr__(self) -> str:
-        return 'TIE: ' + str(set(self))
+        return 'TrueTie(' + repr(set(self)) + ')'
 class SummaryData:
     def __init__(self,score_hist, score_sums, pairwise_matrix, preference_matrix):
         self.score_hist = score_hist
