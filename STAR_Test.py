@@ -147,7 +147,7 @@ class TestSTAR:
         ballots = pd.DataFrame(data=election)
         results = STAR(ballots)
         assert isinstance(results['elected'][0], TrueTie)
-        assert set(results['elected'][0].tied) == {0, 1}
+        assert results['elected'][0] == {0, 1}
 
         # 5. One highest-scoring, two or more tied for second-highest. One
         # Condorcet winner among tied (C). One is preferred in runoff (A):
@@ -218,7 +218,7 @@ class TestSTAR:
         ballots = pd.DataFrame(data=election)
         results = STAR(ballots)
         assert isinstance(results['elected'][0], TrueTie)
-        assert set(results['elected'][0].tied) == {0, 1}
+        assert results['elected'][0] == {0, 1}
 
         # 11. Three or more tied for highest-scoring. One Condorcet winner in
         # tiebreaker and two or more tied for 2nd place CW. Break tie (B or C).
@@ -239,7 +239,7 @@ class TestSTAR:
         ballots = pd.DataFrame(data=election)
         results = STAR(ballots)
         assert isinstance(results['elected'][0], TrueTie)
-        assert set(results['elected'][0].tied) == {0, 1, 2}
+        assert results['elected'][0] == {0, 1, 2}
 
 
 if __name__ == '__main__':

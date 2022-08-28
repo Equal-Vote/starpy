@@ -6,10 +6,9 @@ from typing import Union
 class InvalidElection(Exception):
     pass
 
-class TrueTie:
-    def __init__(self, tied):
-        self.tied = tied
-        self.elected = [] 
+class TrueTie(set):
+    def __repr__(self) -> str:
+        return 'TrueTie(' + repr(set(self)) + ')'
 class SummaryData:
     def __init__(self,score_hist, score_sums, pairwise_matrix, preference_matrix):
         self.score_hist = score_hist
@@ -89,20 +88,21 @@ def default_scoring_tiebreaker(pairwise_matrix: pd.DataFrame):
     if len(tmp) == 1:
         return tmp[0]
     elif len(tmp) == 0:
-        return TrueTie(list(pairwise_matrix.columns))
+        return TrueTie(pairwise_matrix.columns)
     else:
         return TrueTie(tmp)
 
 def default_runoff_tiebreaker(summary_data: SummaryData):
     # Any pre-runoff ties must be resolved
     assert len(summary_data.score_sums.index) == 2
-
     a,b = summary_data.score_sums.index
     scores = summary_data.score_sums
-    if np.isclose(scores[a], scores[b]):
-        return TrueTie(list(summary_data.score_sums.index))
+    if scores[a]>scores[b]:
+        return a
+    elif scores[b]>scores[a]:
+        return b
     else:
-        return scores.index[scores.argmax()]
+        return TrueTie(summary_data.score_sums.index)
 
 def Run_STAR_Round(summary_data: SummaryData, scoring_tiebreaker=default_scoring_tiebreaker, runoff_tiebreaker=default_runoff_tiebreaker):
     # If there is only one candidate, elect them
@@ -130,16 +130,17 @@ def Run_STAR_Round(summary_data: SummaryData, scoring_tiebreaker=default_scoring
             if isinstance(w, TrueTie):
                 round_results['logs'].append({'score_true_tie': w})
 
-                if len(w.tied) == 2 and len(runoff_candidates) == 0:
-                    runoff_candidates.extend(w.tied)
+                if len(w) == 2 and len(runoff_candidates) == 0:
+                    runoff_candidates.extend(w)
 
                 else:
                     # In this case, the election returned a tie unresolvable by stated tiebreakers
-                    w.tied.extend(runoff_candidates)
+                    w.union(set(runoff_candidates))
                     round_results['winners'] = w
                     return round_results
 
             else:
+                round_results['logs'].append({'score_tie_winner': w})
                 runoff_candidates.extend([w])
     
     round_results['logs'].append({'runoff_candidates': runoff_candidates})
@@ -155,12 +156,15 @@ def Run_STAR_Round(summary_data: SummaryData, scoring_tiebreaker=default_scoring
         round_results['runner_up'] = a
         return round_results
     else:
+        round_results['logs'].append({'runoff_tie': runoff_candidates})
         runoff_tiebreaker_results = runoff_tiebreaker(copy.deepcopy(summary_data).keep(runoff_candidates))
         if runoff_tiebreaker_results == a:
+            round_results['logs'].append({'runoff_tie_winner': a})
             round_results['winners'] = [a]
             round_results['runner_up'] = b
             return round_results
         elif runoff_tiebreaker_results == b:
+            round_results['logs'].append({'runoff_tie_winner': b})
             round_results['winners'] = [b]
             round_results['runner_up'] = a
             return round_results
@@ -239,9 +243,9 @@ def STAR(input_data: Union[pd.DataFrame,SummaryData], numwinners=1, scoring_tieb
         results['round_results'].append(round_results)
         if isinstance(round_results['winners'], TrueTie):
 
-            if len(round_results['winners'].tied) + len(results['elected']) <= numwinners:
+            if len(round_results['winners']) + len(results['elected']) <= numwinners:
                 # If multiple candidates are tied in STAR but we have enough seats to elect them all, do so
-                results['elected'].extend(round_results['winners'].tied)
+                results['elected'].extend(round_results['winners'])
 
             else:
                 # In this case, the election returned a tie unresolveable by stated tiebreakers
