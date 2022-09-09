@@ -1,10 +1,3 @@
-import json
-import pandas as pd
-import numpy as np
-from STAR import STAR, TrueTie
-import pytest
-
-
 class TestSTAR:
     pass
     # def test_election_with_one_record_only(self):

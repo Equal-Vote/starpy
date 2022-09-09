@@ -6,9 +6,7 @@ Created on Thu Oct  8 12:03:26 2020
 
 import json
 import pandas as pd
-import numpy as np
-from STAR import STAR, TrueTie
-import pytest
+from starpy.STAR import STAR, TrueTie
 
 
 class TestSTAR:

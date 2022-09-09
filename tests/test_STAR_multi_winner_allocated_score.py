@@ -6,8 +6,7 @@ Created on Thu Oct  8 12:03:26 2020
 """
 
 import pandas as pd
-import numpy as np
-from Allocated_Score import Allocated_Score 
+from starpy.Allocated_Score import Allocated_Score
 
 # #Centerist bias 3 
 # Candidates = ['A','B','C']
