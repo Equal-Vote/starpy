@@ -6,6 +6,8 @@ Created on Thu Oct  8 12:03:26 2020
 
 import json
 import pandas as pd
+import sys
+sys.path.append('.')
 from starpy.STAR import STAR, TrueTie
 
 
