@@ -4,17 +4,23 @@ on:
   push:
   pull_request:
 
+env:
+  FORCE_COLOR: 1
+
 jobs:
   build_python:
 
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
+        python-version: ["3.9", "3.10"]
 
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+      with:
+        persist-credentials: false
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
