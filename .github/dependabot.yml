@@ -9,6 +9,13 @@
 # docker, docker-compose, github-actions, terraform and pip take default-days
 # alone and are rejected outright if given the semver keys.
 #
+# A group only covers security-advisory PRs if it sets
+# `applies-to: security-updates` -- a group without that key defaults to
+# version updates alone, which leaves advisories arriving one PR per advisory.
+# The *-security groups below bundle them per ecosystem. Those deliberately
+# include majors: declining a security fix because it is a major bump is not a
+# real option.
+#
 # Docs: https://docs.github.com/code-security/dependabot/dependabot-version-updates
 version: 2
 
@@ -26,6 +33,10 @@ updates:
         update-types:
           - minor
           - patch
+      pip-security:
+        applies-to: security-updates
+        patterns:
+          - "*"
 
   - package-ecosystem: github-actions
     directory: /
@@ -39,3 +50,7 @@ updates:
         update-types:
           - minor
           - patch
+      github-actions-security:
+        applies-to: security-updates
+        patterns:
+          - "*"
