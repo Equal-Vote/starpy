@@ -1,41 +1,79 @@
-# Dependabot version updates.
+# Dependabot configuration.
 #
-# Minor and patch bumps are grouped into a single PR per ecosystem to keep
-# review overhead low. Major bumps are deliberately left ungrouped so each one
-# gets its own PR and a real review.
+# Policy (set deliberately -- please read before editing):
 #
-# A cooldown holds brand-new releases for a few days, which blunts compromised-
-# release supply-chain attacks. Only semver ecosystems accept semver-*-days;
-# docker, docker-compose, github-actions, terraform and pip take default-days
-# alone and are rejected outright if given the semver keys.
+#   1. Routine version updates are minor/patch only. The `ignore` block drops
+#      semver-major bumps. The `version-update:` prefix scopes that ignore to
+#      VERSION updates only, so a security advisory whose only fix is a major
+#      bump still opens a PR. Never drop the `update-types:` key from that
+#      ignore entry -- a bare `dependency-name: "*"` would also silence
+#      security updates.
 #
-# Docs: https://docs.github.com/code-security/dependabot/dependabot-version-updates
+#   2. Everything lands in as few PRs as possible.
+#      `multi-ecosystem-groups` merges every ecosystem in this repo into ONE
+#      pull request per week.
+#
+#   3. Security advisories are grouped per ecosystem by the `*-security`
+#      groups below. A multi-ecosystem group covers VERSION
+#      updates only -- it has no `applies-to` key -- so without these,
+#      advisories would arrive one PR per advisory.
+#
+#   4. `open-pull-requests-limit` is deliberately ABSENT. Dependabot rejects the
+#      whole file if it appears on an update entry belonging to a
+#      multi-ecosystem group, and the published JSON schema does NOT catch
+#      that -- only Dependabot's own validator does. Setting it on the group
+#      instead is documented as correct but was never confirmed to parse, so
+#      it is left off: the group raises one PR regardless, and security PRs
+#      are exempt from the limit in any case.
+#
+#   5. Cooldown holds brand-new releases for a few days, which blunts
+#      compromised-release supply-chain attacks. Only semver ecosystems accept
+#      `semver-*-days`; docker, docker-compose, github-actions, terraform and
+#      pip take `default-days` alone and are REJECTED if given the semver keys.
+#
+# Docs: https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference
 version: 2
 
-updates:
-
-  - package-ecosystem: pip
-    directory: /
+multi-ecosystem-groups:
+  all-dependencies:
     schedule:
       interval: weekly
-    open-pull-requests-limit: 10
+      day: monday
+      time: "06:00"
+    labels:
+      - dependencies
+
+updates:
+  - package-ecosystem: pip
+    directory: /
+    multi-ecosystem-group: all-dependencies
+    patterns:
+      - "*"
     cooldown:
       default-days: 7
-    groups:
-      pip:
+    ignore:
+      - dependency-name: "*"
         update-types:
-          - minor
-          - patch
+          - version-update:semver-major
+    groups:
+      pip-security:
+        applies-to: security-updates
+        patterns:
+          - "*"
 
   - package-ecosystem: github-actions
     directory: /
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 10
+    multi-ecosystem-group: all-dependencies
+    patterns:
+      - "*"
     cooldown:
       default-days: 7
-    groups:
-      github-actions:
+    ignore:
+      - dependency-name: "*"
         update-types:
-          - minor
-          - patch
+          - version-update:semver-major
+    groups:
+      github-actions-security:
+        applies-to: security-updates
+        patterns:
+          - "*"
