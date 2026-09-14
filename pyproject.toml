@@ -29,8 +29,8 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
-  "numpy>=1.21.4",
-  "pandas>=1.3.4",
+  "numpy>=1.26.4",
+  "pandas>=1.5.3",
 ]
 optional-dependencies.tests = [
   "pytest",
